@@ -2,6 +2,19 @@
 
 Este projeto é uma implementação de uma árvore binária com persistência parcial
 
+
+
+
+
+
+## Como rodar o projeto
+
+Entre dentro da pasta src com seu terminal e execute o comando abaixo
+
+```
+python main.py
+```
+
 ## Estrutura de pastas
 
 ```
