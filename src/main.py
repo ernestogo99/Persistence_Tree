@@ -3,10 +3,14 @@ from tree.bintree import Tree
 
 tree=Tree()
 
-tree.insert(1)
-tree.insert(2)
-tree.insert(3)
+for value in [20, 10, 30, 5, 15, 25, 35]:
+    tree.insert(value)
+
+
+
 print(tree)
-node=tree.search(2)
+node=tree.search(15)
 tree.print_tree()
-print(node.parent)
+
+print(f'parent: {node.parent}')
+print(f'{tree.sucessor(20)}')

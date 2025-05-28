@@ -58,4 +58,18 @@ class Tree:
         return self._size(self.root)
     
 
+    def _successor_rec(self,node:Node, value, succ=None):
+        if node is None:
+            return succ
+        
+        if node.value <= value:
+            return self._successor_rec(node.right,value,succ)
+        else:
+            return self._successor_rec(node.left, value, node)
+        
+
+    def sucessor(self,value):
+        return self._successor_rec(self.root,value)    
+    
+
 
