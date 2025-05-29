@@ -1,4 +1,4 @@
-from ..list.lista import Lista
+from list.lista import Lista
 
 class Node:
     def __init__(self, value, p=10):
