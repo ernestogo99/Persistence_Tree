@@ -5,9 +5,12 @@ feito em python.
 
 ## Equipe
 
+```
 Ernesto Dalva 
 Diego Rabelo
 Diogo Santiago
+```
+
 
 
 ## Como rodar o projeto
@@ -83,7 +86,7 @@ Métodos da classe
 
 
 
-## 📦 Funcionalidades da Classe `Node`
+## 📦 Funcionalidades da Classe `Tree`
 
 Atributos da classe
 
