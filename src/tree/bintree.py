@@ -9,23 +9,27 @@ class Tree:
         self.size = 0
         self.roots[0] = None 
 
+
     def __repr__(self):
         return self._repr_aux(self.roots[self.current_version], 0, self.current_version)
+
 
     def _repr_aux(self, node: Node, level, version):
         if node is None:
             return ""
-        spaces = " " * (level * 4)
-        result = f"{spaces}{node.value}\n"
+        spaces = ","
+        result = f"{spaces}{node.value}"
         result += self._repr_aux(self.get_field(node, FieldEnum.LEFT, version), level + 1, version)
         result += self._repr_aux(self.get_field(node, FieldEnum.RIGHT, version), level + 1, version)
         return result
+
 
     def _print_in_order(self, node: Node, version: int, level: int):
         if node:
             self._print_in_order(self.get_field(node, FieldEnum.LEFT, version), version, level + 1)
             print(f'Value: {node.value} level: {level}')  
             self._print_in_order(self.get_field(node, FieldEnum.RIGHT, version), version, level + 1)
+
 
     def print_tree_in_order(self, version: int):
         root = self.roots.get(version)
@@ -34,12 +38,14 @@ class Tree:
             return
         self._print_in_order(root, version, 0)
 
+
     def get_field(self, node: Node, field: FieldEnum, version):
         for i in range(node.modifications.size - 1, -1, -1):
             mod = node.modifications.elements[i]
             if mod and mod.field == field and mod.version <= version:
                 return mod.new_value
         return getattr(node, field.value)
+
 
     def set_field(self, node: Node, field: FieldEnum, new_value, version):
         if not node.modifications.is_full():
@@ -50,6 +56,7 @@ class Tree:
             copied = self.copy_node(node, version)
             setattr(copied, field.value, new_value)
             return copied
+
 
     def copy_node(self, node: Node, version):
         copied = Node(node.value)
@@ -77,6 +84,7 @@ class Tree:
 
         return copied
 
+
     def insert(self, value):
         new_version = self.current_version + 1
         old_root = self.roots[self.current_version]
@@ -86,6 +94,7 @@ class Tree:
             new_root = self._insert_rec(old_root, value, None, new_version)
         self.roots[new_version] = new_root
         self.current_version = new_version
+
 
     def _insert_rec(self, node: Node, value, parent, version):
         if node is None:
@@ -112,12 +121,14 @@ class Tree:
 
         return node
 
+
     def remove(self, value):
         new_version = self.current_version + 1
         old_root = self.roots[self.current_version]
         new_root = self._remove_rec(old_root, value, new_version)
         self.roots[new_version] = new_root
         self.current_version = new_version
+
 
     def _remove_rec(self, node: Node, value, version):
         if node is None:
@@ -152,6 +163,7 @@ class Tree:
 
             return successor_copied
 
+
     def minimum(self, node: Node, version):
         current = node
         while current:
@@ -161,8 +173,10 @@ class Tree:
             current = left
         return current
 
+
     def search(self, value, version):
         return self._search_rec(self.roots[version], value, version)
+
 
     def _search_rec(self, node: Node, value, version):
         if node is None or node.value == value:
@@ -173,8 +187,56 @@ class Tree:
         else:
             return self._search_rec(self.get_field(node, FieldEnum.RIGHT, version), value, version)
 
+
     def print_version(self, version):
-        print(self._repr_aux(self.roots[version], 0, version))
+        return self._repr_aux(self.roots[version], 0, version)[1:]
+
 
     def print_tree(self):
-        self.print_version(self.current_version)
+        return self.print_version(self.current_version)
+
+
+    def successor(self, value: int, version: int = None):
+        if version is None:
+            version = self.current_version
+        
+        root = self.roots.get(version)
+        if root is None:
+            return None
+        
+        node = self._search_rec(root, value, version)
+        
+        if node is None:
+            return self._ceil(root, value, version)
+        else:
+            right = self.get_field(node, FieldEnum.RIGHT, version)
+            if right is not None:
+                return self.minimum(right, version).value
+            else:
+                return self._find_ancestor_successor(node, value, version)
+
+
+    def _ceil(self, node: Node, value: int, version: int):
+        if node is None:
+            return None
+        
+        if node.value == value:
+            return value
+        
+        if node.value < value:
+            return self._ceil(self.get_field(node, FieldEnum.RIGHT, version), value, version)
+        
+        left_ceil = self._ceil(self.get_field(node, FieldEnum.LEFT, version), value, version)
+        return left_ceil if left_ceil is not None else node.value
+
+
+    def _find_ancestor_successor(self, node: Node, value: int, version: int):
+        current = node
+        parent = self.get_field(current, FieldEnum.PARENT, version)
+        
+        while parent is not None and current == self.get_field(parent, FieldEnum.RIGHT, version):
+            current = parent
+            parent = self.get_field(parent, FieldEnum.PARENT, version)
+        
+        return parent.value if parent is not None else None
+
